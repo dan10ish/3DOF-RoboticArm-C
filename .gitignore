@@ -1,10 +1,10 @@
+*.DS_Store
+
 # Prerequisites
 *.d
 
 # Object files
-*.o
 *.ko
-*.obj
 *.elf
 
 # Linker output
@@ -29,9 +29,6 @@
 *.dylib
 
 # Executables
-*.exe
-*.out
-*.app
 *.i*86
 *.x86_64
 *.hex
