@@ -23,6 +23,7 @@ void calculateIK(RobotArm *arm, Position target) {
     // Calculate theta2
     arm->theta2 = atan2((-target.z+arm->a1), sqrt(target.x*target.x + target.y*target.y))-acos(((arm->a3*arm->a3)-(arm->a2*arm->a2)-(dop1*dop1))/(-2*arm->a2*dop1));
 
+
     // Calculate theta3
     arm->theta3 = PI-acos((dop1*dop1-arm->a2*arm->a2-arm->a3*arm->a3)/(-2*arm->a2*arm->a3));
 }
