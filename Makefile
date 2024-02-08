@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/RungeKutta
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/RungeKutta $(BINDIR)/Dynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/RungeKutta.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/RungeKutta.o $(OBJDIR)/Dynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
@@ -33,6 +33,10 @@ $(BINDIR)/RungeKutta: $(OBJDIR)/RungeKutta.o
 # Rule to compile source files into object files
 $(OBJDIR)/%.o: %.c
 	$(CC) -c -o $@ $< 
+
+# Rule to compile Dynamics into its own executable
+$(BINDIR)/Dynamics: $(OBJDIR)/Dynamics.o
+	$(CC) -o $@ $^ 
 
 # Phony target for clean to remove object files and executables
 .PHONY: clean
