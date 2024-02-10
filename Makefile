@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/RungeKutta $(BINDIR)/Dynamics
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/RungeKuttaExample $(BINDIR)/Dynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/RungeKutta.o $(OBJDIR)/Dynamics.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/RungeKuttaExample.o $(OBJDIR)/Dynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
@@ -27,7 +27,7 @@ $(BINDIR)/InverseKinematics: $(OBJDIR)/InverseKinematics.o
 	$(CC) -o $@ $^ 
 
 # Rule to compile RungeKutta into its own executable
-$(BINDIR)/RungeKutta: $(OBJDIR)/RungeKutta.o
+$(BINDIR)/RungeKuttaExample: $(OBJDIR)/RungeKuttaExample.o
 	$(CC) -o $@ $^ 
 
 # Rule to compile source files into object files
