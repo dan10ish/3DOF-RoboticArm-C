@@ -29,9 +29,36 @@ typedef struct
     double qdot[3]; // Velocities: qdot1, qdot2, qdot3
 } RobotState;
 
-void DynIImkcndzero(const RobotState *state, double *xdot)
+void calculateMassMatrix(const RobotState *state, double M[3][3])
 {
 
+    double q2 = state->q[1], q3 = state->q[2];
+
+    // // Initialize the mass matrix
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     for (int j = 0; j < 3; j++)
+    //     {
+    //         M[i][j] = 0.0;
+    //     }
+    // }
+
+    // Calculate elements of the mass matrix
+    M[0][0] = (1.0 / 6.0) * m2 * (a2 * a2) + (1.0 / 3.0) * m3 * (a2 * a2) + (1.0 / 6.0) * m3 * (a3 * a3) + (1.0 / 6.0) * m3 * (a3 * a3) * cos((2 * q2) + (2 * q3)) + ((1.0 / 6.0) * m2 + (1.0 / 3.0) * m3) * (a2 * a2) * cos(2 * q2) + (1 / 2) * m3 * a2 * a3 * (cos(2 * q2 + 2 * q3)) + cos(q3);
+    M[0][1] = 0.0;
+    M[0][2] = 0.0;
+
+    M[1][0] = 0.0;
+    M[1][1] = (1.0 / 3.0) * m2 * (a2 * a2) + m3 * (a2 * a2) + (1.0 / 3.0) * m3 * (a3 * a3) + m3 * a2 * a3 * cos(q3);
+    M[1][2] = (1.0 / 3.0) * m3 * (a3 * a3) + (1.0 / 2.0) * m3 * a2 * a3 * cos(q3);
+
+    M[2][0] = 0.0;
+    M[2][1] = (1.0 / 3.0) * m3 * (a3 * a3) + (1.0 / 2.0) * m3 * a2 * a3 * cos(q3);
+    M[2][2] = (1.0 / 3.0) * m3 * (a3 * a3);
+}
+
+void DynIImkcndzero(const RobotState *state, double *xdot)
+{
     // Extract state variables for readability
     double q1 = state->q[0], q2 = state->q[1], q3 = state->q[2];
     double qdot1 = state->qdot[0], qdot2 = state->qdot[1], qdot3 = state->qdot[2];
@@ -70,27 +97,30 @@ void DynIImkcndzero(const RobotState *state, double *xdot)
                 (1.0 / 2.0) * g0 * m2 * a2 * cos(q2);
     double h3 = -g0 * m3 * ((1.0 / 2.0) * a3 * cos(q2 + q3));
 
-    // Update xdot based on dynamics
-    xdot[0] = qdot1;
-    xdot[1] = qdot2;
-    xdot[2] = qdot3;
-    xdot[3] = -(b11 * qdot1 + sign(qdot1) * (b12 - (b12 - b13) * exp(-fabs(qdot1) / apsilon1))) -
-              (C112 * qdot1 * qdot2 + C113 * qdot1 * qdot3) - h1;
-    xdot[4] = -(b21 * qdot2 + sign(qdot2) * (b22 - (b22 - b23) * exp(-fabs(qdot2) / apsilon2))) -
-              (C211 * pow(qdot1, 2) + C233 * pow(qdot3, 2) + C232 * qdot3 * qdot2) - h2;
-    xdot[5] = -(b31 * qdot3 + sign(qdot3) * (b32 - (b32 - b33) * exp(-fabs(qdot3) / apsilon3))) -
-              (C311 * pow(qdot1, 2) + C322 * pow(qdot2, 2)) - h3;
-
-    // // Update derivatives
+    // // Update xdot based on dynamics
     // xdot[0] = qdot1;
     // xdot[1] = qdot2;
     // xdot[2] = qdot3;
     // xdot[3] = -(b11 * qdot1 + sign(qdot1) * (b12 - (b12 - b13) * exp(-fabs(qdot1) / apsilon1))) -
     //           (C112 * qdot1 * qdot2 + C113 * qdot1 * qdot3) - h1;
     // xdot[4] = -(b21 * qdot2 + sign(qdot2) * (b22 - (b22 - b23) * exp(-fabs(qdot2) / apsilon2))) -
-    //           (C211 * pow(qdot1, 2) + C223 * qdot3 * qdot2) - h2;
+    //           (C211 * pow(qdot1, 2) + C233 * pow(qdot3, 2) + C232 * qdot3 * qdot2) - h2;
     // xdot[5] = -(b31 * qdot3 + sign(qdot3) * (b32 - (b32 - b33) * exp(-fabs(qdot3) / apsilon3))) -
-    //           (C322 * pow(qdot2, 2) + C311 * pow(qdot1, 2)) - h3;
+    //           (C311 * pow(qdot1, 2) + C322 * pow(qdot2, 2)) - h3;
+    double M[3][3];
+
+    // Calculate the mass matrix
+    calculateMassMatrix(state, M);
+
+    xdot[0] = qdot1;
+    xdot[1] = qdot2;
+    xdot[2] = qdot3;
+    xdot[3] = -(b11 * qdot1 + sign(qdot1) * (b12 - (b12 - b13) * exp(-fabs(qdot1) / apsilon1))) -
+              (M[0][0] * qdot1 + M[0][1] * qdot2 + M[0][2] * qdot3) - h1;
+    xdot[4] = -(b21 * qdot2 + sign(qdot2) * (b22 - (b22 - b23) * exp(-fabs(qdot2) / apsilon2))) -
+              (M[1][0] * qdot1 + M[1][1] * qdot2 + M[1][2] * qdot3) - h2;
+    xdot[5] = -(b31 * qdot3 + sign(qdot3) * (b32 - (b32 - b33) * exp(-fabs(qdot3) / apsilon3))) -
+              (M[2][0] * qdot1 + M[2][1] * qdot2 + M[2][2] * qdot3) - h3;
 }
 
 void rk4(void (*model)(const RobotState *, double *), RobotState *state, double dt)
@@ -142,7 +172,7 @@ int main()
     // Time Step
     double dt = 0.01;
     double t = 0;
-    double t_end = 200;
+    double t_end = 50;
 
     // Plotting the Values
     // Open a file for writing
