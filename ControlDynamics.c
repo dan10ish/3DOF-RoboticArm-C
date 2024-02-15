@@ -154,54 +154,47 @@ void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau)
     xdot[5] = accelerations[2];
 }
 
+// Fourth-order Runge-Kutta integrator - Updated to pass tau
 void rk4(void (*model)(const RobotState *, double *, const double *), RobotState *state, double dt, const double *tau)
 {
-    double k1[6], k2[6], k3[6], k4[6];
+    double k1[6], k2[6], k3[6], k4[6], tempXdot[6];
     RobotState tempState = *state;
 
     // Calculate k1
     model(state, k1, tau);
     // Update tempState for k2 calculation
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
-        if (i < 3) // For q[i], update using velocities
-            tempState.q[i] += 0.5 * dt * k1[i];
-        else // For qdot[i-3], update using accelerations
-            tempState.qdot[i - 3] += 0.5 * dt * k1[i];
+        tempState.q[i] += 0.5 * dt * k1[i];
+        tempState.qdot[i] += 0.5 * dt * k1[i + 3];
     }
     model(&tempState, k2, tau);
 
     // Update tempState for k3 calculation
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
-        if (i < 3)
-            tempState.q[i] = state->q[i] + 0.5 * dt * k2[i];
-        else
-            tempState.qdot[i - 3] = state->qdot[i - 3] + 0.5 * dt * k2[i];
+        tempState.q[i] = state->q[i] + 0.5 * dt * k2[i];
+        tempState.qdot[i] = state->qdot[i] + 0.5 * dt * k2[i + 3];
     }
     model(&tempState, k3, tau);
 
     // Update tempState for k4 calculation
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
-        if (i < 3)
-            tempState.q[i] = state->q[i] + dt * k3[i];
-        else
-            tempState.qdot[i - 3] = state->qdot[i - 3] + dt * k3[i];
+        tempState.q[i] = state->q[i] + dt * k3[i];
+        tempState.qdot[i] = state->qdot[i] + dt * k3[i + 3];
     }
     model(&tempState, k4, tau);
 
     // Update state with the final weighted average
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
-        if (i < 3)
-            state->q[i] += dt * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6;
-        else
-            state->qdot[i - 3] += dt * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6;
+        state->q[i] += dt * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6;
+        state->qdot[i] += dt * (k1[i + 3] + 2 * k2[i + 3] + 2 * k3[i + 3] + k4[i + 3]) / 6;
     }
 }
 
-int main()
+int mainA()
 {
     // Initial coordinates (0, -0.385, 0.4)
     // Initial joint Velocities (0,0,0)
