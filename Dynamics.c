@@ -135,7 +135,7 @@ void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau)
 
     // Net forces acting on the system (considering damping, Coriolis, and gravitational forces)
     double net_forces[3];
-    net_forces[0] = tau[0] - (b11 * qdot1 + sign(qdot1) * (b12 - (b12 - b13) * exp(-fabs(qdot1) / apsilon1))) + 0; // h1 is implicitly 0
+    net_forces[0] = tau[0] - (b11 * qdot1 + sign(qdot1) * (b12 - (b12 - b13) * exp(-fabs(qdot1) / apsilon1))) + 0; // h1
     net_forces[1] = tau[1] - (b21 * qdot2 + sign(qdot2) * (b22 - (b22 - b23) * exp(-fabs(qdot2) / apsilon2))) +
                     -(C211 * pow(qdot1, 2) + C233 * pow(qdot3, 2) + C232 * qdot3 * qdot2) - h2;
     net_forces[2] = tau[2] - (b31 * qdot3 + sign(qdot3) * (b32 - (b32 - b33) * exp(-fabs(qdot3) / apsilon3))) +

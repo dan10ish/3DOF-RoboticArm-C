@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/RungeKuttaExample $(BINDIR)/Dynamics
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/ControlDynamics $(BINDIR)/Dynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/RungeKuttaExample.o $(OBJDIR)/Dynamics.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/ControlDynamics.o $(OBJDIR)/Dynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
@@ -26,17 +26,17 @@ $(BINDIR)/ForwardKinematics: $(OBJDIR)/ForwardKinematics.o
 $(BINDIR)/InverseKinematics: $(OBJDIR)/InverseKinematics.o
 	$(CC) -o $@ $^ 
 
-# Rule to compile RungeKutta into its own executable
-$(BINDIR)/RungeKuttaExample: $(OBJDIR)/RungeKuttaExample.o
+# Rule to compile Control into its own executable
+$(BINDIR)/Control: $(OBJDIR)/Control.o
+	$(CC) -o $@ $^ 
+
+# Rule to compile Dynamics into its own executable
+$(BINDIR)/Dynamics: $(OBJDIR)/Dynamics.o
 	$(CC) -o $@ $^ 
 
 # Rule to compile source files into object files
 $(OBJDIR)/%.o: %.c
 	$(CC) -c -o $@ $< 
-
-# Rule to compile Dynamics into its own executable
-$(BINDIR)/Dynamics: $(OBJDIR)/Dynamics.o
-	$(CC) -o $@ $^ 
 
 # Phony target for clean to remove object files and executables
 .PHONY: clean
