@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/ControlDynamics $(BINDIR)/Dynamics
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/Dynamics $(BINDIR)/ControlDynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/ControlDynamics.o $(OBJDIR)/Dynamics.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/Dynamics.o $(OBJDIR)/ControlDynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
