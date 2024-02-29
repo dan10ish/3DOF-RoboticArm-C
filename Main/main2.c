@@ -19,7 +19,7 @@
 #define END_X2 0.73
 #define END_Y2 0
 #define END_Z2 0.2
-#define ARRAY_SIZE 4 * NSTEPPERSEC + 3 // Added extra space for spline calculation
+#define ARRAY_SIZE 4 * NSTEPPERSEC + 1 // Added extra space for spline calculation
 
 #define PI 3.14159265358979323846
 
@@ -54,7 +54,7 @@ int invertMatrix(double M[3][3], double Minv[3][3])
     // Add a small epsilon value to the determinant check
     if (fabs(det) < 1e-12)
     {
-        fprintf(stderr, "Matrix is singular or nearly singular. Determinant: %f\n", det);
+        fprintf(stderr, "Matrix is singular or nearly singular.");
         return -1;
     }
 
@@ -158,9 +158,9 @@ int main()
     writeCSV("Bx.csv", &Bx[0][0], 4 * NSTEPPERSEC + 1, 3);
     writeCSV("By.csv", &By[0][0], 4 * NSTEPPERSEC + 1, 3);
     writeCSV("Bz.csv", &Bz[0][0], 4 * NSTEPPERSEC + 1, 3);
-    writeCSV("Bth1.csv", &Bth1[0][0], 4 * NSTEPPERSEC + 1, 6);
-    writeCSV("Bth2.csv", &Bth2[0][0], 4 * NSTEPPERSEC + 1, 6);
-    writeCSV("Bth3.csv", &Bth3[0][0], 4 * NSTEPPERSEC + 1, 6);
+    // writeCSV("Bth1.csv", &Bth1[0][0], 4 * NSTEPPERSEC + 1, 6);
+    // writeCSV("Bth2.csv", &Bth2[0][0], 4 * NSTEPPERSEC + 1, 6);
+    // writeCSV("Bth3.csv", &Bth3[0][0], 4 * NSTEPPERSEC + 1, 6);
 
     return 0;
 }
@@ -272,10 +272,14 @@ void calculate_spline_acceleration_and_jerk(double Bth[][6], int length)
     double S[3][3] = {{1, 0, 0}, {1, 0.5, 0.25}, {1, 1, 1}};
     double Si[3][3]; // Inverted S matrix
 
-    invertMatrix(S, Si);
+    if (invertMatrix(S, Si) != 0)
+    {
+        fprintf(stderr, "Matrix inversion failed.\n");
+        return;
+    }
 
     // Perform the spline calculations
-    for (int k = 0; k < length - 2; k++)
+    for (int k = 0; k < length; k++)
     {
         double V[3] = {Bth[k][2], Bth[k + 1][2], Bth[k + 2][2]}; // Velocity vector
         double rabc[3];                                          // Resultant vector for acceleration and jerk
@@ -308,6 +312,31 @@ void writeCSV(char *filename, double *data, int rows, int columns)
     fclose(file);
 }
 
+// void writeCSV2(const char *filename, double data[][6], int length)
+// {
+//     FILE *fp = fopen(filename, "w");
+//     if (fp == NULL)
+//     {
+//         perror("Unable to open file for writing");
+//         return;
+//     }
+
+//     for (int i = 0; i < length; ++i)
+//     {
+//         for (int j = 0; j < 6; ++j)
+//         {
+//             fprintf(fp, "%f", data[i][j]);
+//             if (j < 5)
+//             {
+//                 fprintf(fp, ",");
+//             }
+//         }
+//         fprintf(fp, "\n");
+//     }
+
+//     fclose(fp);
+// }
+
 void writeCSV2(const char *filename, double data[][6], int length)
 {
     FILE *fp = fopen(filename, "w");
@@ -319,10 +348,10 @@ void writeCSV2(const char *filename, double data[][6], int length)
 
     for (int i = 0; i < length; ++i)
     {
-        for (int j = 0; j < 6; ++j)
+        for (int j = 0; j < 20; ++j)
         {
             fprintf(fp, "%f", data[i][j]);
-            if (j < 5)
+            if (j < 19)
             {
                 fprintf(fp, ",");
             }
