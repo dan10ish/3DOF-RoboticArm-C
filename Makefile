@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/Dynamics $(BINDIR)/Trajectory $(BINDIR)/ControlDynamics
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/Dynamics $(BINDIR)/Trajectory $(BINDIR)/GravityCompensated $(BINDIR)/ControlDynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/Dynamics.o $(OBJDIR)/Trajectory.o $(OBJDIR)/ControlDynamics.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/Dynamics.o $(OBJDIR)/Trajectory.o $(OBJDIR)/GravityCompensated.o  $(OBJDIR)/ControlDynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
@@ -38,6 +38,10 @@ $(BINDIR)/Dynamics: $(OBJDIR)/Dynamics.o
 $(BINDIR)/Trajectory: $(OBJDIR)/Trajectory.o
 	$(CC) -o $@ $^ 
 
+# Rule to compile GravityCompensated into its own executable
+$(BINDIR)/GravityCompensated: $(OBJDIR)/GravityCompensated.o
+	$(CC) -o $@ $^ 
+
 # Special rules for Kinematics folder
 $(OBJDIR)/ForwardKinematics.o: Kinematics/ForwardKinematics.c
 	$(CC) -c -o $@ $<
@@ -47,6 +51,10 @@ $(OBJDIR)/InverseKinematics.o: Kinematics/InverseKinematics.c
 
 # Special rule for Control folder
 $(OBJDIR)/Control.o: Control/Control.c
+	$(CC) -c -o $@ $<
+
+# Special rule for GravityCompensated folder
+$(OBJDIR)/GravityCompensated.o: Control/GravityCompensated.c
 	$(CC) -c -o $@ $<
 
 # Rule to compile source files into object files

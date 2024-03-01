@@ -14,6 +14,7 @@ Welcome to the repository for the yaw-pitch robotic arm simulation in C. This pr
 - **Control**: Implements control logic.
   - `Control.c`: PD controller for the robotic arm.
   - `ControlDynamics.c`: Applies control dynamics based on the PD controller output.
+  - `GravityCompensated.c`: Implements gravity compensation alongside PD control for the robotic arm.
 - **Kinematics**:
   - `ForwardKinematics.c`: Calculates the end-effector position based on given joint angles.
   - `InverseKinematics.c`: Computes the joint angles required to reach a specified end-effector position.
@@ -24,19 +25,24 @@ Welcome to the repository for the yaw-pitch robotic arm simulation in C. This pr
 ### Compilation and Execution
 
 For compiling the project :
+
 ```sh
 make all
 ```
+
 This generates executables in the `executable` folder.
 
 For executing the files :
+
 ```sh
 cd executable
 ./<executable_name>
 ```
+
 Run these executables to simulate the robotic arm's behavior. The simulations' results are output to `CSV Files` for dynamics and trajectory.
 
 For deleting the executable and object files in the project :
+
 ```sh
 make clean
 ```
@@ -45,7 +51,8 @@ make clean
 
 ### Forward and Inverse Kinematics
 
-- **Forward Kinematics (`ForwardKinematics.c`)**: 
+- **Forward Kinematics (`ForwardKinematics.c`)**:
+
   - Input: Joint angles (yaw, pitch1, pitch2).
   - Output: Position of the end-effector (x, y, z).
   - Usage: Modify the joint angles in the `main` function to simulate different end-effector positions.
@@ -71,12 +78,13 @@ Generates a trajectory for the robotic arm from a starting to an ending point ov
 - Output: Trajectory data including position, velocity, acceleration, and jerk.
 - User-Specified Information: Adjust start and end points, and duration as needed for different trajectories.
 
-### Control Logic (`Control.c` and `ControlDynamics.c`)
+### Control Logic (`Control.c`, `GravityCompensated.c` and `ControlDynamics.c`)
 
 Implements a Proportional-Derivative (PD) control strategy to achieve desired arm positions and velocities.
 
 - **`Control.c`**: Defines the PD controller gains and desired states.
 - **`ControlDynamics.c`**: Applies the control inputs to simulate the arm's motion under PD control.
+- **`GravityCompensated.c`**: Start at a point and apply the torque that cancels out gravity terms only. Then the robot holds all its angles in simulation.
 - User-Specified Information: Update PD gains and desired states based on specific control requirements.
 
 ### DH Parameters
