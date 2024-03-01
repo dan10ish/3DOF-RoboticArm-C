@@ -10,10 +10,10 @@ $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 # Executable targets
-TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/Dynamics $(BINDIR)/Main $(BINDIR)/ControlDynamics
+TARGETS=$(BINDIR)/ForwardKinematics $(BINDIR)/InverseKinematics $(BINDIR)/Control $(BINDIR)/Dynamics $(BINDIR)/Trajectory $(BINDIR)/ControlDynamics
 
 # Object files
-OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/Dynamics.o $(OBJDIR)/Main.o $(OBJDIR)/ControlDynamics.o
+OBJS=$(OBJDIR)/ForwardKinematics.o $(OBJDIR)/InverseKinematics.o $(OBJDIR)/Control.o $(OBJDIR)/Dynamics.o $(OBJDIR)/Trajectory.o $(OBJDIR)/ControlDynamics.o
 
 # Default rule to make all targets
 all: $(TARGETS)
@@ -34,8 +34,8 @@ $(BINDIR)/Control: $(OBJDIR)/Control.o
 $(BINDIR)/Dynamics: $(OBJDIR)/Dynamics.o
 	$(CC) -o $@ $^ 
 
-# Rule to compile Main into its own executable
-$(BINDIR)/Main: $(OBJDIR)/Main.o
+# Rule to compile Trajectory into its own executable
+$(BINDIR)/Trajectory: $(OBJDIR)/Trajectory.o
 	$(CC) -o $@ $^ 
 
 # Special rules for Kinematics folder
@@ -47,10 +47,6 @@ $(OBJDIR)/InverseKinematics.o: Kinematics/InverseKinematics.c
 
 # Special rule for Control folder
 $(OBJDIR)/Control.o: Control/Control.c
-	$(CC) -c -o $@ $<
-
-# Special rule for Main folder
-$(OBJDIR)/Main.o: Main/Main.c
 	$(CC) -c -o $@ $<
 
 # Rule to compile source files into object files
