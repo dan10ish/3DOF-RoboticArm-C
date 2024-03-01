@@ -1,5 +1,7 @@
 # Yaw-Pitch Robotic Arm Simulation
 
+### Complete Mathematical modelling of YPP Robotic arm in `C` with no use of external libraries.
+
 Welcome to the repository for the yaw-pitch robotic arm simulation in C. This project demonstrates the application of forward and inverse kinematics, control dynamics, trajectory planning, and dynamic modeling for the YPP robotic arm. Below is a detailed guide on how to utilize and understand the components of this project.
 
 ## Project Structure Overview
