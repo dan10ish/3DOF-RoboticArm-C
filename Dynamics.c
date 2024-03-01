@@ -215,7 +215,7 @@ int main()
     double tau[3] = {0, 0, 0};
 
     // Open a file for writing simulation data
-    FILE *file = fopen("simulation_data2.csv", "w");
+    FILE *file = fopen("CSV Files/Dynamics.csv", "w");
     if (file == NULL)
     {
         printf("Error opening file\n");

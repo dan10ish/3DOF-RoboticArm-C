@@ -2,40 +2,32 @@
 #include <stdlib.h>
 #include <math.h>
 
-// Adjusting the define values to avoid naming conflicts
 #define NSTEPPERSEC 5000
 #define DELT (1.0 / NSTEPPERSEC)
 #define LINK_D1 0.2
 #define LINK_A2 0.5
 #define LINK_A3 0.4
 #define START_TIME 2
-#define DURATION_T 2
-#define DURATION_S 0.5
-#define TIME_T1 3
-#define TIME_T2 5
 #define START_X1 0.23
 #define START_Y1 0.3
 #define START_Z1 0.15
 #define END_X2 0.73
 #define END_Y2 0
 #define END_Z2 0.2
-#define ARRAY_SIZE 4 * NSTEPPERSEC + 1 // Added extra space for spline calculation
-
+#define TIME_T1 3
+#define TIME_T2 5
+#define DURATION_T 2
+#define DURATION_S 0.5
 #define PI 3.14159265358979323846
+#define ARRAY_SIZE (4 * NSTEPPERSEC + 1)
 
-// Declaration for the provided inverse kinematics and Jacobian functions
+// Function prototypes
 void ikypprob1(double x, double y, double z, double *th1, double *th2, double *th3);
 void yppjack(double th1, double th2, double th3, double jac[3][3]);
-
-// acdsnjj function declaration
 void acdsnjj(double s1, double S, double t1, double T, double Sa, double Saa, double t, double *jerk, double *jounce, double *Ta, double *ac, double *Tac, double *acs);
-
-void writeCSV(char *filename, double *data, int rows, int columns);
-
-void writeCSV2(const char *filename, double data[][6], int length);
-
-// Calculate spline acceleration and jerk
 void calculate_spline_acceleration_and_jerk(double Bth[][6], int length);
+
+void writeCSV(const char *filename, double data[][3], int length);
 
 // Matrix Calculations
 
@@ -91,78 +83,63 @@ int main()
 {
     double x1 = START_X1, y1 = START_Y1, z1 = START_Z1;
     double x2 = END_X2, y2 = END_Y2, z2 = END_Z2;
-    double to = START_TIME;
-    double delt = DELT;
-    int nsteppersec = NSTEPPERSEC;
-
-    double th10, th20, th30;
-    ikypprob1(x1, y1, z1, &th10, &th20, &th30);
-
     double my = (y2 - y1) / (x2 - x1);
     double Cy = y1 - my * x1;
     double mz = (z2 - z1) / (x2 - x1);
     double Cz = z1 - mz * x1;
 
-    double Bx[4 * nsteppersec + 1][3], By[4 * nsteppersec + 1][3], Bz[4 * nsteppersec + 1][3];
-    double Bth1[4 * nsteppersec + 1][6], Bth2[4 * nsteppersec + 1][6], Bth3[4 * nsteppersec + 1][6];
+    double th1, th2, th3;
+    double sx, sy, sz, vx = 0, vy = 0, vz = 0;
     double jerk, jounce, Ta, ac, Tac, acs;
-    double a = 0, v = 0, s = 0.23;
-    double sx, sy, sz, vx, vy, vz;
-    double sth1, sth2, sth3, vth1, vth2, vth3;
-    double jac[3][3];
+    double a = 0, v = 0, s = START_X1;
 
-    for (int i = 0; i <= 4 * nsteppersec; i++)
+    double trajectory[ARRAY_SIZE][3]; // To store the end effector positions
+
+    for (int i = 0; i < ARRAY_SIZE; i++)
     {
-        double t = to + i * DELT;
+        double t = START_TIME + i * DELT;
         acdsnjj(0.23, 0.5, TIME_T1, DURATION_T, 0.025, 0.005, t, &jerk, &jounce, &Ta, &ac, &Tac, &acs);
         a += jerk * DELT;
         v += a * DELT;
         s += v * DELT;
+
         sx = s;
         sy = my * sx + Cy;
         sz = mz * sx + Cz;
 
-        ikypprob1(sx, sy, sz, &sth1, &sth2, &sth3);
-        yppjack(sth1, sth2, sth3, jac);
+        ikypprob1(sx, sy, sz, &th1, &th2, &th3);
 
-        // Assuming dth calculation is handled correctly within ikypprob1 or similar
-
-        Bx[i][0] = t;
-        Bx[i][1] = sx;
-        Bx[i][2] = vx;
-
-        By[i][0] = t;
-        By[i][1] = sy;
-        By[i][2] = vy;
-
-        Bz[i][0] = t;
-        Bz[i][1] = sz;
-        Bz[i][2] = vz;
-
-        Bth1[i][0] = t;
-        Bth1[i][1] = sth1;
-        Bth2[i][0] = t;
-        Bth2[i][1] = sth2;
-        Bth3[i][0] = t;
-        Bth3[i][1] = sth3;
+        trajectory[i][0] = sx;
+        trajectory[i][1] = sy;
+        trajectory[i][2] = sz;
     }
+
+    double Bth1[ARRAY_SIZE][6], Bth2[ARRAY_SIZE][6], Bth3[ARRAY_SIZE][6];
 
     calculate_spline_acceleration_and_jerk(Bth1, ARRAY_SIZE);
     calculate_spline_acceleration_and_jerk(Bth2, ARRAY_SIZE);
     calculate_spline_acceleration_and_jerk(Bth3, ARRAY_SIZE);
 
-    writeCSV2("Bth1.csv", Bth1, ARRAY_SIZE);
-    writeCSV2("Bth2.csv", Bth2, ARRAY_SIZE);
-    writeCSV2("Bth3.csv", Bth3, ARRAY_SIZE);
-
-    writeCSV("Bx.csv", &Bx[0][0], 4 * NSTEPPERSEC + 1, 3);
-    writeCSV("By.csv", &By[0][0], 4 * NSTEPPERSEC + 1, 3);
-    writeCSV("Bz.csv", &Bz[0][0], 4 * NSTEPPERSEC + 1, 3);
-    // writeCSV("Bth1.csv", &Bth1[0][0], 4 * NSTEPPERSEC + 1, 6);
-    // writeCSV("Bth2.csv", &Bth2[0][0], 4 * NSTEPPERSEC + 1, 6);
-    // writeCSV("Bth3.csv", &Bth3[0][0], 4 * NSTEPPERSEC + 1, 6);
+    writeCSV("CSV Files/Trajectory.csv", trajectory, ARRAY_SIZE);
 
     return 0;
+}
+
+void writeCSV(const char *filename, double data[][3], int length)
+{
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL)
+    {
+        perror("Unable to open file for writing");
+        return;
+    }
+
+    for (int i = 0; i < length; ++i)
+    {
+        fprintf(fp, "%f,%f,%f\n", data[i][0], data[i][1], data[i][2]);
+    }
+
+    fclose(fp);
 }
 
 void ikypprob1(double x, double y, double z, double *th1, double *th2, double *th3)
@@ -278,86 +255,15 @@ void calculate_spline_acceleration_and_jerk(double Bth[][6], int length)
         return;
     }
 
-    // Perform the spline calculations
-    for (int k = 0; k < length; k++)
-    {
+    // Adjusted to avoid accessing out-of-bounds elements
+    for (int k = 0; k < length - 2; k++)
+    {                                                            // Ensure k+2 is within bounds
         double V[3] = {Bth[k][2], Bth[k + 1][2], Bth[k + 2][2]}; // Velocity vector
         double rabc[3];                                          // Resultant vector for acceleration and jerk
         multiplyMatrixVector(Si, V, rabc);
 
+        // Store acceleration and jerk in the array
         Bth[k][4] = rabc[1] / (2 * DELT);        // Acceleration
         Bth[k][5] = rabc[2] / (2 * DELT * DELT); // Jerk
     }
-}
-
-void writeCSV(char *filename, double *data, int rows, int columns)
-{
-    FILE *file = fopen(filename, "w");
-    if (file == NULL)
-    {
-        printf("Error opening file %s\n", filename);
-        return;
-    }
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < columns; j++)
-        {
-            // Calculate the index using row-major order and print the value
-            fprintf(file, "%f", *(data + i * columns + j));
-            if (j < columns - 1)
-                fprintf(file, ",");
-        }
-        fprintf(file, "\n");
-    }
-    fclose(file);
-}
-
-// void writeCSV2(const char *filename, double data[][6], int length)
-// {
-//     FILE *fp = fopen(filename, "w");
-//     if (fp == NULL)
-//     {
-//         perror("Unable to open file for writing");
-//         return;
-//     }
-
-//     for (int i = 0; i < length; ++i)
-//     {
-//         for (int j = 0; j < 6; ++j)
-//         {
-//             fprintf(fp, "%f", data[i][j]);
-//             if (j < 5)
-//             {
-//                 fprintf(fp, ",");
-//             }
-//         }
-//         fprintf(fp, "\n");
-//     }
-
-//     fclose(fp);
-// }
-
-void writeCSV2(const char *filename, double data[][6], int length)
-{
-    FILE *fp = fopen(filename, "w");
-    if (fp == NULL)
-    {
-        perror("Unable to open file for writing");
-        return;
-    }
-
-    for (int i = 0; i < length; ++i)
-    {
-        for (int j = 0; j < 20; ++j)
-        {
-            fprintf(fp, "%f", data[i][j]);
-            if (j < 19)
-            {
-                fprintf(fp, ",");
-            }
-        }
-        fprintf(fp, "\n");
-    }
-
-    fclose(fp);
 }
