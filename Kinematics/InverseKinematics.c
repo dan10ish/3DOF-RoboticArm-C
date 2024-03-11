@@ -39,7 +39,7 @@ int main() {
   RobotArm arm;
   Position pos;
 
-  printf("Enter link lenths (a1 a2 a3): \n");
+  printf("Enter link lengths (L1 L2 L3): \n");
   scanf("%lf %lf %lf", &arm.a1, &arm.a2, &arm.a3);
 
   printf("Enter Target coordinates (x y z): \n");

@@ -54,13 +54,29 @@ make clean
 - **Forward Kinematics (`ForwardKinematics.c`)**:
 
   - Input: Joint angles (yaw, pitch1, pitch2).
+  Example Input for yaw = 30deg, pitch1 = 45deg, pitch2 = 45deg and all link lengths (L1, L2, L3) = 10units :
+  ```
+  Enter yaw: 30
+  Enter pitch1: 45
+  Enter pitch2 : 30
+  Enter Link length L1: 10
+  Enter Link length L2: 10
+  Enter Link length L3: 10
+  ```
   - Output: Position of the end-effector (x, y, z).
-  - Usage: Modify the joint angles in the `main` function to simulate different end-effector positions.
+  - Usage: Enter the joint angles after executing the script to simulate different end-effector positions.
 
 - **Inverse Kinematics (`InverseKinematics.c`)**:
   - Input: Desired end-effector position (x, y, z).
+  Example Input for target coordinates (12,14,16) with all link lengths(L1, L2, L3) = 10units
+  ```
+  Enter link lengths (L1 L2 L3):
+  10 10 10
+  Enter Target coordinates (x y z):
+  12 14 16
+  ```
   - Output: Required joint angles.
-  - Usage: Set the target position in the `main` function to compute the necessary joint angles.
+  - Usage: Enter the target position after executing the script to compute the necessary joint angles.
 
 ### Dynamics (`Dynamics.c`)
 
