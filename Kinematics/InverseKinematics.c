@@ -35,12 +35,20 @@ void calculateIK(RobotArm *arm, Position target) {
 }
 
 int main() {
-  RobotArm arm = {10, 10, 10}; // Initialize with link lengths
-  Position target = {14.488887, 8.365163, 19.659258}; // Target position
 
-  calculateIK(&arm, target);
+  RobotArm arm;
+  Position pos;
 
-  printf("Joint Angles:\n");
+  printf("Enter link lenths (a1 a2 a3): \n");
+  scanf("%lf %lf %lf", &arm.a1, &arm.a2, &arm.a3);
+
+  printf("Enter Target coordinates (x y z): \n");
+  scanf("%lf %lf %lf", &pos.x, &pos.y, &pos.z);
+
+  calculateIK(&arm, pos);
+
+  printf("Joint Angles: \n");
+
   printf("Theta1: %f radians and %f degrees\n", arm.theta1,
          arm.theta1 * (180 / PI));
   printf("Theta2: %f radians and %f degrees\n", arm.theta2,

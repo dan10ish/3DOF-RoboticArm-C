@@ -119,14 +119,28 @@ Vector3D calculateForwardKinematics(double yaw, double pitch1, double pitch2,
 }
 
 int main() {
-  double yaw = 30;                  // Base rotation in degrees
-  double pitch1 = 45;               // First joint pitch in degrees
-  double pitch2 = 30;               // Second joint pitch in degrees
-  double L1 = 10, L2 = 10, L3 = 10; // Link lengths
+
+  double yaw, pitch1, pitch2;
+  double L1, L2, L3;
+
+  printf("\nEnter yaw: ");
+  scanf("%lf", &yaw);
+  printf("\nEnter pitch1:");
+  scanf("%lf", &pitch1);
+  printf("\nEnter pitch2: ");
+  scanf("%lf", &pitch2);
+
+  printf("\nEnter Link length L1: ");
+  scanf("%lf", &L1);
+  printf("\nEnter Link length L2: ");
+  scanf("%lf", &L2);
+  printf("\nEnter Link length L3: ");
+  scanf("%lf", &L3);
 
   Vector3D endEffector =
       calculateForwardKinematics(yaw, pitch1, pitch2, L1, L2, L3);
-  printf("End Effector Position: (x: %f, y: %f, z: %f)\n", endEffector.x,
+
+  printf("\n End Effector Position: (x: %f, y: %f, z: %f)\n", endEffector.x,
          endEffector.y, endEffector.z);
 
   return 0;
