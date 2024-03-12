@@ -47,6 +47,12 @@ For deleting the executable and object files in the project :
 make clean
 ```
 
+To execute and run these programs in `Linux`, edit the Makefile or in the terminal execute each program with the following command:
+```
+gcc fileName.c -o executableFileName -lm
+./executableFileName
+```
+
 ## Detailed Guide
 
 ### Forward and Inverse Kinematics
