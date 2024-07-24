@@ -1,4 +1,4 @@
-#include "ControlDynamics.c" // Make sure this path is correct
+#include "ControlDynamics.c"
 #include <math.h>
 #include <stdio.h>
 
@@ -10,10 +10,11 @@ double Kd[3] = {70, 72, 74};       // Derivative gains
 double th0dds[3] = {1.0, 1.0, 1.0}; // Example desired positions
 double th1dds[3] = {0.0, 0.0, 0.0}; // Example desired velocities
 
-void calculateControlTorques(const RobotState *state, double *tau) {
-  for (int i = 0; i < 3; i++) {
-    // PD Control Law: tau = Kp * (desired_pos - current_pos) + Kd *
-    // (desired_vel - current_vel)
+void calculateControlTorques(const RobotState *state, double *tau)
+{
+  for (int i = 0; i < 3; i++)
+  {
+    // PD Control Law: tau = Kp * (desired position - current position) + Kd * (desired velocity - current velocity)
     tau[i] = Kp[i] * (th0dds[i] - state->q[i]) +
              Kd[i] * (th1dds[i] - state->qdot[i]);
 
@@ -23,7 +24,8 @@ void calculateControlTorques(const RobotState *state, double *tau) {
   }
 }
 
-int main() {
+int main()
+{
   // Initialize current state
   RobotState currentState = {{0, -0.387, 0.45}, {0, 0, 0}};
   // Control torques for each joint

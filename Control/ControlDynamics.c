@@ -6,24 +6,32 @@
 double g0 = 9.81, m1 = 0.25, m2 = 0.25, m3 = 0.2, d1 = 0.2, a2 = 0.5, a3 = 0.4;
 
 // Sign function
-double sign(double num) {
-  if (num > 0) {
+double sign(double num)
+{
+  if (num > 0)
+  {
     return 1.0;
-  } else if (num < 0) {
+  }
+  else if (num < 0)
+  {
     return -1.0;
-  } else {
+  }
+  else
+  {
     return 0.0;
   }
 }
 
 // Robot State Structure
-typedef struct {
+typedef struct
+{
   double q[3];    // Displacements: q1, q2, q3
   double qdot[3]; // Velocities: qdot1, qdot2, qdot3
 } RobotState;
 
 // Mass Matrix Calculation
-void calculateMassMatrix(const RobotState *state, double M[3][3]) {
+void calculateMassMatrix(const RobotState *state, double M[3][3])
+{
   double q2 = state->q[1], q3 = state->q[2];
 
   M[0][0] = (1.0 / 6.0) * m2 * (a2 * a2) + (1.0 / 3.0) * m3 * (a2 * a2) +
@@ -44,18 +52,21 @@ void calculateMassMatrix(const RobotState *state, double M[3][3]) {
   M[2][2] = (1.0 / 3.0) * m3 * (a3 * a3);
 }
 
-double determinant(double M[3][3]) {
+double determinant(double M[3][3])
+{
   double det = M[0][0] * (M[1][1] * M[2][2] - M[2][1] * M[1][2]) -
                M[0][1] * (M[1][0] * M[2][2] - M[1][2] * M[2][0]) +
                M[0][2] * (M[1][0] * M[2][1] - M[1][1] * M[2][0]);
   return det;
 }
 
-int invertMatrix(double M[3][3], double Minv[3][3]) {
+int invertMatrix(double M[3][3], double Minv[3][3])
+{
   double det = determinant(M);
 
-  if (fabs(det) < 1e-6) { // Check for non-invertible matrix
-    return -1;            // Matrix is singular or nearly singular
+  if (fabs(det) < 1e-6)
+  {            // Check for non-invertible matrix
+    return -1; // Matrix is singular or nearly singular
   }
 
   double invDet = 1.0 / det;
@@ -75,17 +86,21 @@ int invertMatrix(double M[3][3], double Minv[3][3]) {
   return 0; // Success
 }
 
-void multiplyMatrixVector(double M[3][3], double V[3], double R[3]) {
-  for (int i = 0; i < 3; i++) {
+void multiplyMatrixVector(double M[3][3], double V[3], double R[3])
+{
+  for (int i = 0; i < 3; i++)
+  {
     R[i] = 0;
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < 3; j++)
+    {
       R[i] += M[i][j] * V[j];
     }
   }
 }
 
 // Dynamics Function
-void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau) {
+void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau)
+{
   // Extract state variables for readability
   double q1 = state->q[0], q2 = state->q[1], q3 = state->q[2];
   double qdot1 = state->qdot[0], qdot2 = state->qdot[1], qdot3 = state->qdot[2];
@@ -121,7 +136,8 @@ void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau) {
   // Mass matrix and its inverse
   double M[3][3], Minv[3][3];
   calculateMassMatrix(state, M);
-  if (invertMatrix(M, Minv) != 0) {
+  if (invertMatrix(M, Minv) != 0)
+  {
     fprintf(stderr, "Matrix inversion failed.\n");
     return;
   }
@@ -161,42 +177,48 @@ void DynIImkcndzero(const RobotState *state, double *xdot, const double *tau) {
 
 // Fourth-order Runge-Kutta integrator - Updated to pass tau
 void rk4(void (*model)(const RobotState *, double *, const double *),
-         RobotState *state, double dt, const double *tau) {
+         RobotState *state, double dt, const double *tau)
+{
   double k1[6], k2[6], k3[6], k4[6], tempXdot[6];
   RobotState tempState = *state;
 
   // Calculate k1
   model(state, k1, tau);
   // Update tempState for k2 calculation
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++)
+  {
     tempState.q[i] += 0.5 * dt * k1[i];
     tempState.qdot[i] += 0.5 * dt * k1[i + 3];
   }
   model(&tempState, k2, tau);
 
   // Update tempState for k3 calculation
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++)
+  {
     tempState.q[i] = state->q[i] + 0.5 * dt * k2[i];
     tempState.qdot[i] = state->qdot[i] + 0.5 * dt * k2[i + 3];
   }
   model(&tempState, k3, tau);
 
   // Update tempState for k4 calculation
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++)
+  {
     tempState.q[i] = state->q[i] + dt * k3[i];
     tempState.qdot[i] = state->qdot[i] + dt * k3[i + 3];
   }
   model(&tempState, k4, tau);
 
   // Update state with the final weighted average
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++)
+  {
     state->q[i] += dt * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6;
     state->qdot[i] +=
         dt * (k1[i + 3] + 2 * k2[i + 3] + 2 * k3[i + 3] + k4[i + 3]) / 6;
   }
 }
 
-int mainA() {
+int mainA()
+{
   // Initial coordinates (0, -0.385, 0.4)
   // Initial joint Velocities (0,0,0)
   RobotState state = {{0, -0.387, 0.45}, {0, 0, 0}};
@@ -210,7 +232,8 @@ int mainA() {
 
   // Open a file for writing simulation data
   FILE *file = fopen("ControlDynamics.csv", "w");
-  if (file == NULL) {
+  if (file == NULL)
+  {
     printf("Error opening file\n");
     return 1;
   }
@@ -219,7 +242,8 @@ int mainA() {
   fprintf(file, "Time,q1,q2,q3,qdot1,qdot2,qdot3\n");
 
   // Main simulation loop
-  while (t < t_end) {
+  while (t < t_end)
+  {
     rk4(DynIImkcndzero, &state, dt, tau);
     t += dt;
 

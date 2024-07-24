@@ -1,8 +1,8 @@
-# 3 Degrees of Freedom Robotic Arm Simulation
+# 3-DOF Robotic Arm Simulation
 
 ### Complete Mathematical modelling of 3DOF (yaw-pitch-pitch) Robotic arm in `C` with no use of external libraries.
 
-Welcome to the repository for the yaw-pitch robotic arm simulation in C. This project demonstrates the application of forward and inverse kinematics, control dynamics, trajectory planning, and dynamic modeling for the YPP robotic arm. Below is a detailed guide on how to utilize and understand the components of this project.
+This is the repository for the yaw-pitch robotic arm simulation in C. This project demonstrates the application of forward and inverse kinematics, control dynamics, trajectory planning, and dynamic modeling for the YPP robotic arm. Below is a detailed guide on how to utilize and understand the components of this project.
 
 ## Project Structure Overview
 
@@ -48,6 +48,7 @@ make clean
 ```
 
 To execute and run these programs in `Linux`, edit the Makefile or in the terminal execute each program with the following command:
+
 ```
 gcc fileName.c -o executableFileName -lm
 ./executableFileName
@@ -60,7 +61,8 @@ gcc fileName.c -o executableFileName -lm
 - **Forward Kinematics (`ForwardKinematics.c`)**:
 
   - Input: Joint angles (yaw, pitch1, pitch2).
-  Example Input for yaw = 30deg, pitch1 = 45deg, pitch2 = 45deg and all link lengths (L1, L2, L3) = 10units :
+    Example Input for yaw = 30deg, pitch1 = 45deg, pitch2 = 45deg and all link lengths (L1, L2, L3) = 10units :
+
   ```
   Enter yaw: 30
   Enter pitch1: 45
@@ -69,12 +71,13 @@ gcc fileName.c -o executableFileName -lm
   Enter Link length L2: 10
   Enter Link length L3: 10
   ```
+
   - Output: Position of the end-effector (x, y, z).
   - Usage: Enter the joint angles after executing the script to simulate different end-effector positions.
 
 - **Inverse Kinematics (`InverseKinematics.c`)**:
   - Input: Desired end-effector position (x, y, z).
-  Example Input for target coordinates (12,14,16) with all link lengths(L1, L2, L3) = 10units
+    Example Input for target coordinates (12,14,16) with all link lengths(L1, L2, L3) = 10units
   ```
   Enter link lengths (L1 L2 L3):
   10 10 10

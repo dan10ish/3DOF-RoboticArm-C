@@ -3,17 +3,20 @@
 
 #define PI 3.14159265358979323846
 
-typedef struct {
+typedef struct
+{
   double x, y, z;
 } Position;
 
-typedef struct {
+typedef struct
+{
   double a1, a2, a3;             // Link lengths
   double theta1, theta2, theta3; // Joint angles
 } RobotArm;
 
 // Function to calculate the inverse kinematics
-void calculateIK(RobotArm *arm, Position target) {
+void calculateIK(RobotArm *arm, Position target)
+{
 
   double dop1 = sqrt((target.x * target.x) + (target.y * target.y) +
                      ((target.z - arm->a1) * (target.z - arm->a1)));
@@ -34,7 +37,8 @@ void calculateIK(RobotArm *arm, Position target) {
                 (-2 * arm->a2 * arm->a3));
 }
 
-int main() {
+int main()
+{
 
   RobotArm arm;
   Position pos;

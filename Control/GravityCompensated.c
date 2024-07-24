@@ -1,4 +1,4 @@
-#include "ControlDynamics.c" // Ensure this includes the RobotState definition
+#include "ControlDynamics.c"
 #include <math.h>
 #include <stdio.h>
 
@@ -7,17 +7,19 @@ double Kp[3] = {1200, 1271, 1344}; // Proportional gains
 double Kd[3] = {70, 72, 74};       // Derivative gains
 
 // Desired state (positions and velocities)
-double th0dds[3] = {1.0, 1.0, 1.0}; // Example desired positions
-double th1dds[3] = {0.0, 0.0, 0.0}; // Example desired velocities
+double th0dds[3] = {1.0, 1.0, 1.0}; // Desired positions
+double th1dds[3] = {0.0, 0.0, 0.0}; // Desired velocities
 
-void calculateControlTorques(const RobotState *state, double *tau) {
+void calculateControlTorques(const RobotState *state, double *tau)
+{
   double M[3][3];         // Mass matrix
   double Minv[3][3];      // Inverse of the mass matrix
   double err[3], errd[3]; // Error and error derivative
 
   // Compute the mass matrix for the current state
   calculateMassMatrix(state, M);
-  if (invertMatrix(M, Minv) != 0) {
+  if (invertMatrix(M, Minv) != 0)
+  {
     fprintf(stderr, "Failed to invert mass matrix.\n");
     return;
   }
@@ -65,7 +67,8 @@ void calculateControlTorques(const RobotState *state, double *tau) {
   C[2] = C3;
 
   // PD Control with gravity compensation and dynamic consideration
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++)
+  {
     err[i] = th0dds[i] - state->q[i];     // Position error
     errd[i] = th1dds[i] - state->qdot[i]; // Velocity error
     // Desired acceleration based on PD control
@@ -76,7 +79,8 @@ void calculateControlTorques(const RobotState *state, double *tau) {
 }
 
 // Main function remains largely unchanged
-int main() {
+int main()
+{
   // Initialize current state
   RobotState currentState = {{0, -0.387, 0.45}, {0, 0, 0}};
   double tau[3];

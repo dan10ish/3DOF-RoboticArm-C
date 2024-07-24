@@ -2,22 +2,26 @@
 #include <stdio.h>
 
 // Define a structure for 3D vectors
-typedef struct {
+typedef struct
+{
   double x, y, z;
 } Vector3D;
 
 // Define a structure for 3x3 matrices
-typedef struct {
+typedef struct
+{
   double m[3][3];
 } Matrix3x3;
 
 // Define a structure for 4x4 matrices
-typedef struct {
+typedef struct
+{
   double m[4][4];
 } Matrix4x4;
 
 // Function to create a rotation matrix about the Z-axis (yaw)
-Matrix4x4 createRotationZ(double angle) {
+Matrix4x4 createRotationZ(double angle)
+{
   Matrix4x4 R;
   double rad = angle * M_PI / 180.0; // Convert to radians
   R.m[0][0] = cos(rad);
@@ -40,7 +44,8 @@ Matrix4x4 createRotationZ(double angle) {
 }
 
 // Function to create a rotation matrix about the Y-axis (pitch)
-Matrix4x4 createRotationY(double angle) {
+Matrix4x4 createRotationY(double angle)
+{
   Matrix4x4 R;
   double rad = angle * M_PI / 180.0; // Convert to radians
   R.m[0][0] = cos(rad);
@@ -63,12 +68,16 @@ Matrix4x4 createRotationY(double angle) {
 }
 
 // Function for 4x4 matrix multiplication
-Matrix4x4 multiplyMatrix4x4(Matrix4x4 A, Matrix4x4 B) {
+Matrix4x4 multiplyMatrix4x4(Matrix4x4 A, Matrix4x4 B)
+{
   Matrix4x4 C;
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
       C.m[i][j] = 0;
-      for (int k = 0; k < 4; k++) {
+      for (int k = 0; k < 4; k++)
+      {
         C.m[i][j] += A.m[i][k] * B.m[k][j];
       }
     }
@@ -77,7 +86,8 @@ Matrix4x4 multiplyMatrix4x4(Matrix4x4 A, Matrix4x4 B) {
 }
 
 // Function to create a translation matrix
-Matrix4x4 createTranslation(double dx, double dy, double dz) {
+Matrix4x4 createTranslation(double dx, double dy, double dz)
+{
   Matrix4x4 T;
   T.m[0][0] = 1;
   T.m[0][1] = 0;
@@ -100,7 +110,8 @@ Matrix4x4 createTranslation(double dx, double dy, double dz) {
 
 // Forward kinematics function
 Vector3D calculateForwardKinematics(double yaw, double pitch1, double pitch2,
-                                    double L1, double L2, double L3) {
+                                    double L1, double L2, double L3)
+{
   Matrix4x4 T_base_to_1 = createRotationZ(yaw);
   Matrix4x4 T_1_to_2 =
       multiplyMatrix4x4(T_base_to_1, createTranslation(0, 0, L1));
@@ -118,7 +129,8 @@ Vector3D calculateForwardKinematics(double yaw, double pitch1, double pitch2,
   return endEffectorPosition;
 }
 
-int main() {
+int main()
+{
 
   double yaw, pitch1, pitch2;
   double L1, L2, L3;
